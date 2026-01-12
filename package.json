@@ -1,0 +1,29 @@
+{
+  "name": "saucedemo-automation",
+  "version": "1.0.0",
+  "description": "Automação de testes E2E para SauceDemo usando Playwright e MCP",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed --project=chromium",
+    "test:debug": "playwright test --debug",
+    "test:login": "playwright test tests/login.spec.ts --project=chromium",
+    "test:checkout": "playwright test tests/checkout.e2e.spec.ts --project=chromium",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "allure:serve": "allure serve allure-results"
+  },
+  "keywords": [
+    "playwright",
+    "e2e",
+    "testing",
+    "automation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "allure-playwright": "^2.9.2"
+  }
+}
