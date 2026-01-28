@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright CI
 
 on:
   push:
@@ -11,93 +11,51 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  test:
+  test-and-report:
+    runs-on: ubuntu-latest
     timeout-minutes: 60
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2]
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    
-    - name: Install Allure Commandline
-      run: npm install allure-commandline
-    
-    - name: Run Playwright tests
-      run: npm test -- --shard=${{ matrix.shard }}/2
-      env:
-        CI: true
-    
-    - name: Generate Allure Report
-      if: always()
-      run: |
-        npm run allure:generate
-    
-    - name: Upload Allure results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-results-${{ matrix.shard }}
-        path: allure-results/
-        retention-days: 30
-    
-    - name: Upload Allure report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report-${{ matrix.shard }}
-        path: allure-report/
-        retention-days: 30
-    
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results-${{ matrix.shard }}
-        path: test-results/
-        retention-days: 30
-    
-    - name: Upload HTML report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: html-report-${{ matrix.shard }}
-        path: playwright-report/
-        retention-days: 30
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  deploy-report:
-    if: success() || failure()
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download HTML report
-        uses: actions/download-artifact@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          name: html-report-1
-          path: playwright-report
+          node-version: 18
+          cache: 'npm'
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Upload artifact
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npm test
+        env:
+          CI: true
+
+      - name: Generate Allure Report
+        run: npm run allure:generate
+
+      - name: Upload Pages artifact (Allure report)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: playwright-report
+          path: allure-report
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test-and-report
+    if: needs.test-and-report.result == 'success'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -1,4 +1,6 @@
-# 🎭 SauceDemo - Playwright Automation Pattern
+# SauceDemo - Playwright Automation Pattern
+
+[![CI Status](https://github.com/rfslusarz/saucedemo-automation-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/rfslusarz/saucedemo-automation-playwright/actions/workflows/playwright.yml)
 
 ![Playwright](https://img.shields.io/badge/Playwright-1.40+-45ba4b?style=flat-square&logo=Playwright&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white)
@@ -9,12 +11,18 @@
 
 > **Portfolio Project**: Demonstração de arquitetura robusta e escalável para automação de testes E2E.
 
-[🔗 **Ver Relatório de Testes Online**](https://rfslusarz.github.io/saucedemo-automation-playwright/)  
+[**Ver Relatório de Testes Online**](https://rfslusarz.github.io/saucedemo-automation-playwright/)  
 *(Link disponível após a primeira execução da pipeline no GitHub Actions)*
 
 ---
 
-## 🏗️ Arquitetura do Projeto
+## Demo / Relatórios
+- Publicação automática no GitHub Pages após execução da pipeline.
+- Visualização via Allure Report com cenários, passos, evidências e histórico.
+- Acesso público: https://rfslusarz.github.io/saucedemo-automation-playwright/
+- Atualizado a cada push/PR em `main` ou `develop`.
+
+## Arquitetura do Projeto
 
 Este projeto utiliza **test fixtures** customizadas para injeção de dependência, garantindo testes limpos e desacoplados.
 
@@ -38,7 +46,7 @@ classDiagram
     Fixtures --> PageObject : instancia
 ```
 
-## 🧠 Decisões Técnicas
+## Decisões Técnicas
 
 | Decisão | Por quê? |
 |---------|----------|
@@ -48,7 +56,7 @@ classDiagram
 | **GitHub Actions** | Executa os testes automaticamente a cada Push/PR e publica o relatório na web. |
 | **Allure Report** | Fornece visualização detalhada de passos, screenshots e histórico de execução. |
 
-## 🚀 Como Executar
+## Como Executar
 
 ### Pré-requisitos
 - Node.js 18+
@@ -74,16 +82,17 @@ npm run test:ui
 npm run lint
 ```
 
-## 📂 Estrutura de Pastas
+## Estrutura de Pastas
 
 ```
 .
 ├── .github/          # Configuração de CI/CD
+│   └── workflows/
+│       └── playwright.yml  # Pipeline do GitHub Actions
 ├── fixtures/         # Injeção de Dependência Customizada
 ├── pages/            # Page Objects (Mapeamento de elementos e ações)
 ├── tests/            # Especificações de Teste (Specs)
 ├── utils/            # Funções auxiliares
 ├── .eslintrc.json    # Regras de Code Quality
-├── playwright.yml    # Pipeline do GitHub Actions
 └── package.json      # Dependências e Scripts
 ```
