@@ -1,131 +1,89 @@
-# Automação de Testes - SauceDemo
+# 🎭 SauceDemo - Playwright Automation Pattern
 
-Projeto de demonstração para portfólio de automação de testes E2E na aplicação SauceDemo, utilizando o Playwright como framework e JavaScript como linguagem (com suporte a TypeScript) e gerando relatórios com Allure.
+![Playwright](https://img.shields.io/badge/Playwright-1.40+-45ba4b?style=flat-square&logo=Playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI-2088FF?style=flat-square&logo=github-actions&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-8.0+-4B32C3?style=flat-square&logo=eslint&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![License](https://img.shields.io/badge/License-ISC-yellow?style=flat-square)
 
-## Tecnologias
+> **Portfolio Project**: Demonstração de arquitetura robusta e escalável para automação de testes E2E.
 
-- Playwright - Framework de automação E2E
-- JavaScript/TypeScript - Linguagem de programação
-- Allure Reports - Relatórios de testes
-- Page Object Model (POM) - Padrão de design para organização do código
+[🔗 **Ver Relatório de Testes Online**](https://rfslusarz.github.io/saucedemo-automation-playwright/)  
+*(Link disponível após a primeira execução da pipeline no GitHub Actions)*
 
-## Pré-requisitos
+---
 
-- Node.js (v18 ou superior)
-- npm ou yarn
+## 🏗️ Arquitetura do Projeto
 
-## Instalação
+Este projeto utiliza **test fixtures** customizadas para injeção de dependência, garantindo testes limpos e desacoplados.
 
+```mermaid
+classDiagram
+    class Test {
+        +test()
+    }
+    class Fixtures {
+        +loginPage
+        +inventoryPage
+        +cartPage
+        +checkoutPage
+    }
+    class PageObject {
+        +Locators
+        +Methods
+    }
+    
+    Test --> Fixtures : consome
+    Fixtures --> PageObject : instancia
+```
+
+## 🧠 Decisões Técnicas
+
+| Decisão | Por quê? |
+|---------|----------|
+| **Custom Fixtures** | Remove a repetição de `new Page(page)` nos testes, facilitando a escrita e manutenção. |
+| **Page Object Model** | Separa a lógica de interação da página da lógica de testes. |
+| **ESLint + Prettier** | Garante que o código siga padrões estritos de qualidade e formatação (essencial para times grandes). |
+| **GitHub Actions** | Executa os testes automaticamente a cada Push/PR e publica o relatório na web. |
+| **Allure Report** | Fornece visualização detalhada de passos, screenshots e histórico de execução. |
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+- Node.js 18+
+
+### Instalação
 ```bash
 npm install
+npx playwright install --with-deps
 ```
 
-## Executar Testes
-
-### Todos os testes
+### Comandos Principais
 ```bash
+# Rodar todos os testes
 npm test
-```
 
-### Testes de login
-```bash
+# Rodar testes de Login
 npm run test:login
-```
 
-### Teste E2E de compra
-```bash
-npm run test:checkout
-```
-
-### Modo UI (interativo)
-```bash
+# Rodar com interface visual (Debug)
 npm run test:ui
+
+# Verificar qualidade do código
+npm run lint
 ```
 
-### Modo debug
-```bash
-npm run test:debug
-```
-
-## Relatórios Allure
-
-### Gerar relatório
-```bash
-npm run allure:generate
-```
-
-### Abrir relatório
-```bash
-npm run allure:open
-```
-
-### Servir relatório (desenvolvimento)
-```bash
-npm run allure:serve
-```
-
-## Estrutura do Projeto
+## 📂 Estrutura de Pastas
 
 ```
 .
-├── tests/
-│   ├── login.spec.ts
-│   └── checkout.e2e.spec.ts
-├── pages/
-│   ├── LoginPage.ts
-│   ├── InventoryPage.ts
-│   ├── CartPage.ts
-│   └── CheckoutPage.ts
-├── fixtures/
-│   ├── test-data.ts
-│   └── users.json
-├── utils/
-│   └── helpers.ts
-├── playwright.config.ts
-└── package.json
+├── .github/          # Configuração de CI/CD
+├── fixtures/         # Injeção de Dependência Customizada
+├── pages/            # Page Objects (Mapeamento de elementos e ações)
+├── tests/            # Especificações de Teste (Specs)
+├── utils/            # Funções auxiliares
+├── .eslintrc.json    # Regras de Code Quality
+├── playwright.yml    # Pipeline do GitHub Actions
+└── package.json      # Dependências e Scripts
 ```
-
-## Credenciais
-
-- **Usuário válido**: `standard_user`
-- **Senha válida**: `secret_sauce`
-
-## Cenários de Teste
-
-### Login
-- Login com sucesso
-  - Acessar página de login
-  - Informar credenciais válidas
-  - Validar redirecionamento para /inventory.html
-  - Validar exibição da lista de produtos
-
-- Login inválido
-  - Usuário válido + senha inválida
-  - Usuário inválido + senha válida
-  - Validar mensagem de erro exibida
-
-- Login com campos em branco
-  - Validar mensagem de erro obrigatória
-  - Validar que não foi redirecionado
-
-### E2E – Fluxo completo de compra
-- Fluxo completo de compra
-  - Login com sucesso
-  - Adicionar pelo menos 1 produto ao carrinho
-  - Acessar o carrinho
-  - Iniciar checkout
-  - Preencher dados do comprador (First Name, Last Name, Postal Code)
-  - Continuar e finalizar compra
-  - Validar mensagem: "Thank you for your order!"
-
-## Boas Práticas Implementadas
-
-- Page Object Model (POM) - Separação clara entre páginas e testes
-- Seletores estáveis - Uso de `data-test` attributes e `getByRole`
-- Assertions confiáveis - Uso de `expect` do Playwright
-- Sem waitForTimeout - Uso apenas de waits inteligentes
-- Testes independentes - Cada teste pode ser executado isoladamente
-- Allure Reports - Relatórios detalhados com steps organizados
-- Screenshots automáticos - Capturas em caso de falha
-- Hooks configurados - `beforeEach` e `afterEach` para setup/teardown
-- TypeScript - Tipagem forte para maior confiabilidade

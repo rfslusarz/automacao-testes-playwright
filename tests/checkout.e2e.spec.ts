@@ -1,25 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/fixtures';
 import { allure } from 'allure-playwright';
-import { LoginPage } from '../pages/LoginPage';
-import { InventoryPage } from '../pages/InventoryPage';
-import { CartPage } from '../pages/CartPage';
-import { CheckoutPage } from '../pages/CheckoutPage';
 import { TestData } from '../fixtures/test-data';
 
 test.describe('E2E - Fluxo Completo de Compra', () => {
-  let loginPage: LoginPage;
-  let inventoryPage: InventoryPage;
-  let cartPage: CartPage;
-  let checkoutPage: CheckoutPage;
 
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
-    inventoryPage = new InventoryPage(page);
-    cartPage = new CartPage(page);
-    checkoutPage = new CheckoutPage(page);
-  });
-
-  test('Deve completar fluxo de compra com sucesso', async ({ page }) => {
+  test('Deve completar fluxo de compra com sucesso', async ({ page, loginPage, inventoryPage, cartPage, checkoutPage }) => {
     await allure.epic('E2E - Compra');
     await allure.feature('Fluxo Completo de Compra');
     await allure.story('Compra completa do início ao fim');
@@ -40,7 +25,7 @@ test.describe('E2E - Fluxo Completo de Compra', () => {
     await allure.step('2. Validar listagem de produtos', async () => {
       const hasProducts = await inventoryPage.verifyProductsListVisible();
       expect(hasProducts).toBe(true);
-      
+
       const productsCount = await inventoryPage.getProductsCount();
       expect(productsCount).toBeGreaterThan(0);
     });
@@ -48,7 +33,7 @@ test.describe('E2E - Fluxo Completo de Compra', () => {
     // Step 3: Adicionar produto ao carrinho
     await allure.step('3. Adicionar produto ao carrinho', async () => {
       await inventoryPage.addProductToCart(TestData.products.sauceLabsBackpack);
-      
+
       const cartItemsCount = await inventoryPage.getCartItemsCount();
       expect(cartItemsCount).toBe(1);
     });
@@ -65,7 +50,7 @@ test.describe('E2E - Fluxo Completo de Compra', () => {
     await allure.step('5. Validar produto adicionado no carrinho', async () => {
       const cartItemsCount = await cartPage.getCartItemsCount();
       expect(cartItemsCount).toBe(1);
-      
+
       const productName = await cartPage.getProductName(0);
       expect(productName).toContain(TestData.products.sauceLabsBackpack);
     });
@@ -103,16 +88,16 @@ test.describe('E2E - Fluxo Completo de Compra', () => {
     await allure.step('10. Validar mensagem de sucesso', async () => {
       const orderSuccess = await checkoutPage.verifyOrderSuccess();
       expect(orderSuccess).toBe(true);
-      
+
       const completeHeader = await checkoutPage.getCompleteHeader();
       expect(completeHeader).toContain(TestData.successMessages.orderComplete);
-      
+
       // Validação adicional usando expect do Playwright
       await expect(page.getByText('Thank you for your order!')).toBeVisible();
     });
   });
 
-  test('Deve completar fluxo de compra com múltiplos produtos', async ({ page }) => {
+  test('Deve completar fluxo de compra com múltiplos produtos', async ({ page, loginPage, inventoryPage, cartPage, checkoutPage }) => {
     await allure.epic('E2E - Compra');
     await allure.feature('Fluxo Completo de Compra');
     await allure.story('Compra com múltiplos produtos');
@@ -132,7 +117,7 @@ test.describe('E2E - Fluxo Completo de Compra', () => {
     await allure.step('2. Adicionar múltiplos produtos ao carrinho', async () => {
       await inventoryPage.addProductToCart(TestData.products.sauceLabsBackpack);
       await inventoryPage.addProductToCart(TestData.products.sauceLabsBikeLight);
-      
+
       const cartItemsCount = await inventoryPage.getCartItemsCount();
       expect(cartItemsCount).toBe(2);
     });
@@ -155,7 +140,7 @@ test.describe('E2E - Fluxo Completo de Compra', () => {
       await cartPage.clickCheckout();
       await checkoutPage.waitForPageLoad();
       await expect(page).toHaveURL(/.*checkout-step-one\.html/);
-      
+
       await checkoutPage.fillCheckoutForm(
         TestData.checkout.firstName,
         TestData.checkout.lastName,

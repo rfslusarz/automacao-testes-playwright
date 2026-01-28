@@ -1,20 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/fixtures';
 import { allure } from 'allure-playwright';
-import { LoginPage } from '../pages/LoginPage';
-import { InventoryPage } from '../pages/InventoryPage';
 import { TestData } from '../fixtures/test-data';
 
 test.describe('Login - SauceDemo', () => {
-  let loginPage: LoginPage;
-  let inventoryPage: InventoryPage;
 
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
-    inventoryPage = new InventoryPage(page);
+  test.beforeEach(async ({ loginPage }) => {
     await loginPage.navigate();
   });
 
-  test('Deve realizar login com sucesso', async ({ page }) => {
+  test('Deve realizar login com sucesso', async ({ loginPage, inventoryPage, page }) => {
     await allure.epic('Autenticação');
     await allure.feature('Login');
     await allure.story('Login com credenciais válidas');
@@ -35,14 +29,14 @@ test.describe('Login - SauceDemo', () => {
     await allure.step('Validar presença da lista de produtos', async () => {
       const hasProducts = await inventoryPage.verifyProductsListVisible();
       expect(hasProducts).toBe(true);
-      
+
       const productsCount = await inventoryPage.getProductsCount();
       expect(productsCount).toBeGreaterThan(0);
       expect(productsCount).toBe(6); // SauceDemo sempre tem 6 produtos
     });
   });
 
-  test('Deve exibir erro ao tentar login com senha inválida', async ({ page }) => {
+  test('Deve exibir erro ao tentar login com senha inválida', async ({ loginPage, inventoryPage, page }) => {
     await allure.epic('Autenticação');
     await allure.feature('Login');
     await allure.story('Login com credenciais inválidas - Senha incorreta');
@@ -68,7 +62,7 @@ test.describe('Login - SauceDemo', () => {
     });
   });
 
-  test('Deve exibir erro ao tentar login com usuário inválido', async ({ page }) => {
+  test('Deve exibir erro ao tentar login com usuário inválido', async ({ loginPage, inventoryPage, page }) => {
     await allure.epic('Autenticação');
     await allure.feature('Login');
     await allure.story('Login com credenciais inválidas - Usuário incorreto');
@@ -94,7 +88,7 @@ test.describe('Login - SauceDemo', () => {
     });
   });
 
-  test('Deve exibir erro ao tentar login com usuário e senha em branco', async ({ page }) => {
+  test('Deve exibir erro ao tentar login com usuário e senha em branco', async ({ loginPage, inventoryPage, page }) => {
     await allure.epic('Autenticação');
     await allure.feature('Login');
     await allure.story('Login com dados em branco');
@@ -117,7 +111,7 @@ test.describe('Login - SauceDemo', () => {
     });
   });
 
-  test('Deve exibir erro ao tentar login apenas com usuário em branco', async ({ page }) => {
+  test('Deve exibir erro ao tentar login apenas com usuário em branco', async ({ loginPage }) => {
     await allure.epic('Autenticação');
     await allure.feature('Login');
     await allure.story('Login com usuário em branco');
@@ -136,7 +130,7 @@ test.describe('Login - SauceDemo', () => {
     });
   });
 
-  test('Deve exibir erro ao tentar login apenas com senha em branco', async ({ page }) => {
+  test('Deve exibir erro ao tentar login apenas com senha em branco', async ({ loginPage }) => {
     await allure.epic('Autenticação');
     await allure.feature('Login');
     await allure.story('Login com senha em branco');
