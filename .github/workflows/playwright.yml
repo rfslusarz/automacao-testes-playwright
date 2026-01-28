@@ -29,8 +29,11 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     
+    - name: Install Allure Commandline
+      run: npm install allure-commandline
+    
     - name: Run Playwright tests
-      run: npm test
+      run: npm test -- --shard=${{ matrix.shard }}
       env:
         CI: true
     
@@ -43,7 +46,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: allure-results
+        name: allure-results-${{ matrix.shard }}
         path: allure-results/
         retention-days: 30
     
@@ -51,7 +54,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: allure-report
+        name: allure-report-${{ matrix.shard }}
         path: allure-report/
         retention-days: 30
     
@@ -59,6 +62,14 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results
+        name: test-results-${{ matrix.shard }}
         path: test-results/
+        retention-days: 30
+    
+    - name: Upload HTML report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-report-${{ matrix.shard }}
+        path: playwright-report/
         retention-days: 30
